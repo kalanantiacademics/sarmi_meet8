@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan Minggu 8 - Penutupan, Refleksi, & Post-test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles inspired by the design */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Lighter background */
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+        /* Using a bright lime and a deep blue from the reference image */
+        :root {
+            --brand-lime: #D4FF44;
+            --brand-blue: #302DE4;
+            --brand-dark: #1F1F1F;
+        }
+        
+        /* Starburst SVG for background elements */
+        .starburst {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            color: var(--brand-blue);
+            z-index: 0;
+            opacity: 0.8;
+        }
+
+        /* Background pattern styling */
+        .bg-pattern {
+            position: relative;
+            background: linear-gradient(135deg, #eef7ff 0%, #ffffff 100%);
+            isolation: isolate;
+        }
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('aset/motif.png');
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Full-screen presentation container */
+        #presentation-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Styles for each slide */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out, visibility 0.6s;
+            transform: scale(0.95);
+            background-color: white;
+            overflow: auto; /* Allow scrolling for content-heavy slides */
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        /* Animation for slides moving out to the left */
+        .slide.exit-left {
+            transform: translateX(-100%) scale(0.95);
+            opacity: 0;
+        }
+        
+        /* Animation for slides moving out to the right */
+        .slide.exit-right {
+            transform: translateX(100%) scale(0.95);
+            opacity: 0;
+        }
+        
+        /* Animation for slides entering from the right */
+        .slide.enter-right {
+             transform: translateX(100%) scale(0.95);
+        }
+        
+        /* Animation for slides entering from the left */
+        .slide.enter-left {
+            transform: translateX(-100%) scale(0.95);
+        }
+
+        /* Navigation buttons styling */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .nav-arrow:hover {
+            background-color: var(--brand-blue);
+            transform: translateY(-50%) scale(1.1);
+        }
+        #prev-slide { left: 20px; }
+        #next-slide { right: 20px; }
+
+        /* Slide indicator dots styling */
+        #slide-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 12px;
+            background-color: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 99px;
+        }
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .indicator-dot.active {
+            background-color: var(--brand-lime);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Starburst SVG Definition -->
+    <svg width="0" height="0" class="absolute">
+      <defs>
+        <symbol id="starburst-svg" viewBox="0 0 100 100">
+          <path d="M50 0 L55.9 34.5 L85.35 14.65 L65.5 44.1 L100 50 L65.5 55.9 L85.35 85.35 L55.9 65.5 L50 100 L44.1 65.5 L14.65 85.35 L34.5 55.9 L0 50 L34.5 44.1 L14.65 14.65 L44.1 34.5 Z" fill="currentColor"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <div id="presentation-container" class="relative w-full">
+        <header class="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-30">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Ruang_Guru_logo.svg/1200px-Ruang_Guru_logo.svg.png" alt="Ruangguru Logo" class="h-10">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Lambang_Kabupaten_Sarmi.png" alt="Sarmi Logo" class="h-12">
+        </header>
+
+        <div id="presentation-wrapper">
+            <!-- Slide 1: Judul Utama -->
+            <div id="slide-0" class="slide active" style="background-color: var(--brand-lime);">
+                <svg class="starburst" style="top: 15%; left: 10%; width:80px; height:80px; color: white; transform: rotate(20deg); opacity: 0.7;"><use xlink:href="#starburst-svg"></use></svg>
+                <svg class="starburst" style="bottom: 20%; right: 15%; transform: rotate(-15deg); color: var(--brand-blue);"><use xlink:href="#starburst-svg"></use></svg>
+                <div class="z-10">
+                    <h2 class="text-xl font-semibold text-gray-700">Pertemuan Terakhir | Pertemuan 8</h2>
+                    <h1 class="text-6xl lg:text-7xl font-black text-[var(--brand-dark)] tracking-tighter leading-tight mt-2">Penutupan & Refleksi</h1>
+                    <p class="text-3xl lg:text-4xl font-bold text-[var(--brand-blue)] mt-3">Melihat Kembali Perjalanan Belajar Kita</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Agenda Sesi Penutup -->
+            <div id="slide-1" class="slide bg-pattern">
+                 <h2 class="text-4xl font-black text-gray-800 mb-8">Agenda Sesi Penutup</h2>
+                 <div class="bg-white p-8 rounded-2xl shadow-xl border-2 border-gray-100 max-w-2xl w-full text-left space-y-4 text-xl">
+                    <p><strong>1. Post-test:</strong> Mengukur pemahaman akhir.</p>
+                    <p><strong>2. Berbagi Karya:</strong> Pameran proyek mini di kelompok kecil.</p>
+                    <p><strong>3. Refleksi Bersama:</strong> Diskusi tantangan, manfaat, & rencana tindak lanjut.</p>
+                    <p><strong>4. Penutupan Program:</strong> Apresiasi dan penutupan resmi.</p>
+                 </div>
+            </div>
+
+            <!-- Slide 3: Post-test -->
+            <div id="slide-2" class="slide bg-pattern">
+                <h2 class="text-4xl font-black text-gray-800 mb-8">Saatnya Ujian Akhir: Post-test (15 Menit)</h2>
+                <div class="bg-white p-8 rounded-2xl text-center border-2 border-gray-100 shadow-xl max-w-2xl">
+                    <p class="text-7xl">📝</p>
+                    <p class="text-2xl font-semibold mt-4 text-gray-800">Mari ukur pemahaman kita setelah mengikuti seluruh rangkaian pelatihan.</p>
+                    <div class="mt-6">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=contohlink" alt="QR Code Post-test" class="mx-auto rounded-lg">
+                        <p class="mt-4 font-mono bg-gray-100 p-3 rounded-lg">bit.ly/post-test-guru-ai</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Sesi Berbagi Proyek Mini -->
+            <div id="slide-3" class="slide bg-pattern">
+                <h2 class="text-5xl font-black text-gray-800 mb-8">Galeri Karya: Pameran Proyek Mini</h2>
+                <div class="w-full max-w-4xl bg-gray-100 p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold text-gray-800">Breakout Rooms (25 Menit)</h3>
+                    <p class="text-xl mt-4 text-gray-700">Anda akan dibagi ke dalam kelompok kecil. Setiap anggota akan berbagi proyek mini (Scratch/Canva) yang telah dibuat dan menceritakan prosesnya.</p>
+                </div>
+            </div>
+
+            <!-- Slide 5: Diskusi Reflektif -->
+            <div id="slide-4" class="slide bg-pattern">
+                <h2 class="text-4xl font-black text-gray-800 mb-6">Diskusi Reflektif (35 Menit)</h2>
+                <div class="bg-white p-8 rounded-2xl shadow-lg border-2 border-gray-200 max-w-4xl w-full text-left space-y-6">
+                     <div class="text-xl">
+                        <p class="font-bold text-2xl mb-2 text-[var(--brand-blue)]">1. Tantangan Terbesar?</p>
+                        <p>Apa tantangan terbesar yang Anda hadapi selama pelatihan?</p>
+                     </div>
+                     <div class="text-xl">
+                        <p class="font-bold text-2xl mb-2 text-[var(--brand-blue)]">2. Manfaat Paling Berharga?</p>
+                        <p>Apa 'Aha!' momen atau manfaat paling berharga yang Anda peroleh?</p>
+                     </div>
+                     <div class="text-xl">
+                        <p class="font-bold text-2xl mb-2 text-[var(--brand-blue)]">3. Rencana ke Depan?</p>
+                        <p>Bagaimana rencana Anda untuk mencoba menerapkan ini di kelas?</p>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Feedback Form -->
+            <div id="slide-5" class="slide bg-pattern">
+                <div class="text-center w-full max-w-3xl">
+                    <h2 class="text-5xl font-black text-gray-800 mb-2">Mohon Isi Form Feedback</h2>
+                    <p class="text-xl mb-8 text-gray-600">Masukan Anda sangat berharga untuk perbaikan kami ke depannya.</p>
+                    <div class="bg-white p-8 rounded-2xl shadow-xl border-2 border-gray-200 flex flex-col md:flex-row items-center gap-8">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://bit.ly/sarmi_feedback" alt="QR Code Feedback" class="w-48 h-48 rounded-lg">
+                        <div class="text-left">
+                            <p class="text-lg text-gray-700">Pindai QR code di samping atau kunjungi tautan di bawah ini untuk mengisi form feedback.</p>
+                            <p class="mt-4 font-mono bg-gray-100 p-4 rounded-lg text-center text-lg tracking-wider">bit.ly/sarmi_feedback</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: Foto Bersama -->
+            <div id="slide-6" class="slide bg-pattern">
+                <h2 class="text-6xl font-black text-gray-800">Abadikan Momen!</h2>
+                <p class="text-3xl text-gray-600 mt-4">Saatnya kita foto bersama!</p>
+                <p class="text-8xl mt-8">📸</p>
+            </div>
+
+            <!-- Slide 9: Penutupan Resmi -->
+            <div id="slide-7" class="slide" style="background-color: var(--brand-blue); color: white;">
+                 <svg class="starburst" style="top: 10%; left: 10%; width:120px; height:120px; color: var(--brand-lime); transform: rotate(20deg); opacity: 0.5;"><use xlink:href="#starburst-svg"></use></svg>
+                 <svg class="starburst" style="bottom: 15%; right: 10%; transform: rotate(-15deg); color: white;"><use xlink:href="#starburst-svg"></use></svg>
+                <div class="text-center z-10">
+                    <h1 class="text-8xl font-black">Terima Kasih!</h1>
+                    <p class="text-2xl mt-4 opacity-80">Terima kasih atas partisipasi luar biasa Anda dalam seluruh rangkaian pelatihan ini.</p>
+                    <p class="mt-8 text-xl font-bold">Sampai jumpa di kesempatan berikutnya!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div id="prev-slide" class="nav-arrow">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 a 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </div>
+        <div id="next-slide" class="nav-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <!-- Indicators -->
+        <div id="slide-indicators"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const nextBtn = document.getElementById('next-slide');
+            const prevBtn = document.getElementById('prev-slide');
+            const indicatorsContainer = document.getElementById('slide-indicators');
+            let currentSlide = 0;
+            const slideCount = slides.length;
+            let isAnimating = false;
+
+            // Create indicator dots
+            for (let i = 0; i < slideCount; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('indicator-dot');
+                dot.dataset.slide = i;
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(parseInt(dot.dataset.slide, 10)));
+                indicatorsContainer.appendChild(dot);
+            }
+            const dots = document.querySelectorAll('.indicator-dot');
+
+            function updateIndicators() {
+                dots.forEach(dot => dot.classList.remove('active'));
+                if (dots[currentSlide]) {
+                    dots[currentSlide].classList.add('active');
+                }
+            }
+
+            function goToSlide(slideIndex, direction) {
+                if (isAnimating || slideIndex < 0 || slideIndex >= slideCount || slideIndex === currentSlide) return;
+                isAnimating = true;
+
+                const newSlide = slides[slideIndex];
+                const oldSlide = slides[currentSlide];
+                
+                const slideDirection = direction || (slideIndex > currentSlide ? 'next' : 'prev');
+                
+                if (slideDirection === 'next') {
+                    newSlide.classList.add('enter-right');
+                    oldSlide.classList.add('exit-left');
+                } else {
+                    newSlide.classList.add('enter-left');
+                    oldSlide.classList.add('exit-right');
+                }
+                
+                newSlide.classList.add('active');
+                
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        newSlide.classList.remove('enter-right', 'enter-left');
+                    });
+                });
+
+                currentSlide = slideIndex;
+                updateIndicators();
+                
+                setTimeout(() => {
+                    oldSlide.classList.remove('active', 'exit-left', 'exit-right');
+                    isAnimating = false;
+                }, 600);
+            }
+
+            nextBtn.addEventListener('click', () => {
+                const nextSlideIndex = (currentSlide + 1) % slideCount;
+                goToSlide(nextSlideIndex, 'next');
+            });
+
+            prevBtn.addEventListener('click', () => {
+                const prevSlideIndex = (currentSlide - 1 + slideCount) % slideCount;
+                goToSlide(prevSlideIndex, 'prev');
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                }
+            });
+
+            updateIndicators();
+        });
+    </script>
+</body>
+</html>
